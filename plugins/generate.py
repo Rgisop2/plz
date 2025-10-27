@@ -36,8 +36,8 @@ async def main(bot: Client, message: Message):
         return 
     user_id = int(message.from_user.id)
     phone_number_msg = await bot.ask(chat_id=user_id, text="<b>Please send your phone number which includes country code</b>\n<b>Example:</b> <code>+13124562345, +9171828181889</code>")
-    if phone_number_msg.text=='/cancel':
-        return await phone_number_msg.reply('<b>process cancelled !</b>')
+    if phone_number_msg is None or phone_number_msg.text=='/cancel':
+        return await message.reply('<b>process cancelled !</b>')
     phone_number = phone_number_msg.text
     client = Client(":memory:", API_ID, API_HASH)
     await client.connect()
@@ -51,8 +51,8 @@ async def main(bot: Client, message: Message):
     except Exception as e:
         await phone_number_msg.reply(f'**An error occurred while sending the code:** `{e}`')
         return
-    if phone_code_msg.text=='/cancel':
-        return await phone_code_msg.reply('<b>process cancelled !</b>')
+    if phone_code_msg is None or phone_code_msg.text=='/cancel':
+        return await message.reply('<b>process cancelled !</b>')
     try:
         phone_code = phone_code_msg.text.replace(" ", "")
         await client.sign_in(phone_number, code.phone_code_hash, phone_code)
@@ -64,8 +64,8 @@ async def main(bot: Client, message: Message):
         return
     except SessionPasswordNeeded:
         two_step_msg = await bot.ask(user_id, '**Your account has enabled two-step verification. Please provide the password.\n\nEnter /cancel to cancel The Procces**', filters=filters.text, timeout=300)
-        if two_step_msg.text=='/cancel':
-            return await two_step_msg.reply('<b>process cancelled !</b>')
+    if two_step_msg is None or two_step_msg.text=='/cancel':
+        return await message.reply('<b>process cancelled !</b>')
         try:
             password = two_step_msg.text
             await client.check_password(password=password)
