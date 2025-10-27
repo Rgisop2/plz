@@ -63,6 +63,14 @@ class LinkChanger:
         )
         await client.start()
 
+        # --- Explicit Channel Access Check ---
+        try:
+            await client.get_chat(channel_id)
+        except Exception as e:
+            await client.stop()
+            return False, f"Channel access failed: {type(e).__name__} - {str(e)}"
+        # -----------------------------------
+        
         try:
             max_attempts = 5
             for attempt in range(max_attempts):
