@@ -55,7 +55,7 @@ class LinkChanger:
 
         from config import API_ID, API_HASH
         client = Client(
-            f"user_{user_id}_session", # Unique name for each session
+            None, # Use None for the session name when using session_string and in_memory=True
             session_string=user_session,
             api_id=API_ID,
             api_hash=API_HASH,
@@ -63,24 +63,9 @@ class LinkChanger:
         )
         await client.start()
 
-        # --- Explicit Channel Access Check ---
-        try:
-            # Use the base_username for the initial get_chat call, as it's more reliable for public channels
-            # The full username is base_username + random suffix, so we use the base here.
-            # We also try the numeric ID as a fallback.
-            try:
-                chat = await client.get_chat(base_username)
-            except Exception:
-                chat = await client.get_chat(str(channel_id))
-            
-            # Ensure the retrieved chat ID matches the provided channel_id
-            if chat.id != channel_id:
-                await client.stop()
-                return False, "Channel access failed: Provided ID does not match the channel's base username."
-        except Exception as e:
-            await client.stop()
-            return False, f"Channel access failed: {type(e).__name__} - {str(e)}"
-        # -----------------------------------
+        # The client is started at line 64. We will rely on Pyrogram's internal logic
+        # to handle the channel ID. The previous explicit checks caused more issues.
+        # The logic is now to simply attempt the link change and handle the error.
         
         try:
             max_attempts = 5
@@ -89,6 +74,7 @@ class LinkChanger:
                 new_username = f"{base_username}{new_suffix}"
                 
                 try:
+                    # Cast channel_id to string for maximum compatibility
                     await client.set_chat_username(str(channel_id), new_username)
                     await db.update_last_changed(channel_id, time.time())
                     return True, new_username
