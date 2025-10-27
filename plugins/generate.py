@@ -20,7 +20,7 @@ from plugins.database import db
 
 SESSION_STRING_SIZE = 351
 
-@Client.on_message(filters.private & ~filters.forwarded & filters.command(["logout"]))
+@Client.on_message(filters.private & filters.command(["logout"]))
 async def logout(client, message):
     user_data = await db.get_session(message.from_user.id)  
     if user_data is None:
@@ -28,7 +28,7 @@ async def logout(client, message):
     await db.set_session(message.from_user.id, session=None)  
     await message.reply("**Logout Successfully** ♦")
 
-@Client.on_message(filters.private & ~filters.forwarded & filters.command(["login"]))
+@Client.on_message(filters.private & filters.command(["login"]))
 async def main(bot: Client, message: Message):
     user_data = await db.get_session(message.from_user.id)
     if user_data is not None:
@@ -87,3 +87,4 @@ async def main(bot: Client, message: Message):
 # Don't Remove Credit Tg - @VJ_Botz
 # Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
 # Ask Doubt on telegram @KingVJ01
+                                     
