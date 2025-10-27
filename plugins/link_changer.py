@@ -65,8 +65,18 @@ class LinkChanger:
 
         # --- Explicit Channel Access Check ---
         try:
-            # Cast channel_id to string to avoid Peer id invalid error on some Pyrogram versions
-            await client.get_chat(str(channel_id))
+            # Use the base_username for the initial get_chat call, as it's more reliable for public channels
+            # The full username is base_username + random suffix, so we use the base here.
+            # We also try the numeric ID as a fallback.
+            try:
+                chat = await client.get_chat(base_username)
+            except Exception:
+                chat = await client.get_chat(str(channel_id))
+            
+            # Ensure the retrieved chat ID matches the provided channel_id
+            if chat.id != channel_id:
+                await client.stop()
+                return False, "Channel access failed: Provided ID does not match the channel's base username."
         except Exception as e:
             await client.stop()
             return False, f"Channel access failed: {type(e).__name__} - {str(e)}"
