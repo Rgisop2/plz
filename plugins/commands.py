@@ -16,7 +16,8 @@ Nᴀᴍᴇ - {}</b>
 async def start_message(c, m):
     if not await db.is_user_exist(m.from_user.id):
         await db.add_user(m.from_user.id, m.from_user.first_name)
-        await c.send_message(LOG_CHANNEL, LOG_TEXT.format(m.from_user.id, m.from_user.mention))
+        if LOG_CHANNEL != 0:
+            await c.send_message(LOG_CHANNEL, LOG_TEXT.format(m.from_user.id, m.from_user.mention))
     
     await m.reply_photo(f"https://te.legra.ph/file/119729ea3cdce4fefb6a1.jpg",
         caption=f"<b>Hello {m.from_user.mention} 👋\n\nI Am Public Link Auto-Changer Bot. I Can Automatically Change Your Channel Public Links.\n\nUse /help to see all commands.</b>",
@@ -209,4 +210,4 @@ async def logout_all(client, message):
     
     await message.reply(f"<b>✅ Logged out {count} accounts.</b>")
 
-        
+    
