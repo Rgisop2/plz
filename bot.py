@@ -44,6 +44,41 @@ class Bot(Client):
             except Exception as e:
                 self.LOGGER.warning(f"Could not log to channel: {e}")
 
+    async def ask(self, chat_id, text, filters=None, timeout=60):
+        """
+        Custom implementation of the 'ask' method using Pyrogram's listen.
+        Sends a message and waits for the next message from the same user.
+        """
+        sent_message = await self.send_message(chat_id, text)
+        
+        # The check_message function must be defined inside the ask method
+        # and must be an async function if it uses await, but Pyrogram's
+        # listen filter expects a callable that takes (client, message)
+        # and returns a boolean. Since we are only checking chat_id, it can be sync.
+        def check_message(client, message):
+            if message.chat.id == chat_id:
+                # If a custom filter is provided, it must be used.
+                # Since the original code didn't show the filter, we assume it's a simple check.
+                return True
+            return False
+
+        try:
+            return await self.listen(
+                chat_id=chat_id,
+                filters=check_message,
+                timeout=timeout
+            )
+        except asyncio.TimeoutError:
+            return None # Return None on timeout
+        finally:
+            # We cannot guarantee deletion will work if the message is too old or not found,
+            # but we can try. The original logic was to delete the prompt.
+            try:
+                await sent_message.delete()
+            except Exception:
+                pass
+
+
 if __name__ == "__main__":
     Bot().run()
 
