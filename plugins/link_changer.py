@@ -14,19 +14,13 @@ class LinkChanger:
         # Key: (user_id, channel_id), Value: asyncio.Task
         self.active_tasks = {}
         self.LOGGER = logging.getLogger(__name__)
+        self.bot_client = None # Will be set in resume_all_rotations
 
     def generate_random_suffix(self):
         """Generate random 2 characters (letters or digits)"""
         return ''.join(random.choices(string.ascii_letters + string.digits, k=2))
 
-    def _get_bot_client(self) -> Bot:
-        """Helper to get the running bot instance."""
-        # Since the Bot().run() is called at the end of bot.py, 
-        # the client object will be available as the single running instance.
-        # This is a common pattern in Pyrogram single-client bots.
-        # We rely on the fact that the Bot class is a singleton in this context.
-        from bot import Bot
-        return Bot._instances[0]
+
 
     async def _log_update(self, channel_id, new_username, user_id, interval):
         """Send a success log message to the log channel."""
@@ -39,7 +33,7 @@ class LinkChanger:
         <b>User ID:</b> <code>{user_id}</code> ({user_name})
         <b>Interval:</b> {interval}s
         """
-        await self._get_bot_client().log(text)
+        await self.bot_client.log(text)
 
     async def _log_error(self, channel_id, user_id, error_message):
         """Send an error log message to the log channel."""
@@ -51,7 +45,7 @@ class LinkChanger:
         <b>User ID:</b> <code>{user_id}</code> ({user_name})
         <b>Reason:</b> {error_message}
         """
-        await self._get_bot_client().log(text)
+        await self.bot_client.log(text)
 
     async def change_channel_link(self, user_id, channel_id, base_username):
         """Change the channel's public link with random suffix using the user's session."""
@@ -177,6 +171,7 @@ class LinkChanger:
 
     async def resume_all_rotations(self, bot_client):
         """Resume all active channels on bot startup."""
+        self.bot_client = bot_client # Store the bot instance for logging
         self.LOGGER.info("Resuming all active channel rotations...")
         try:
             channels = await db.get_all_active_channels()
