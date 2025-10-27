@@ -9,5 +9,5 @@ LOG_CHANNEL = int(environ.get("LOG_CHANNEL", "0")) # Default to 0 (disabled) if 
 ADMINS = int(environ.get("ADMINS", "1327021082"))
 
 # Warning - Give Db uri in deploy server environment variable, don't give in repo.
-DB_URI = environ.get("DB_URI", "mongodb+srv://poulomi6969:hello@cluster.pmevjiz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster") # Warning - Give Db uri in deploy server environment variable, don't give in repo.
+DB_URI = environ.get("DB_URI", "mongodb+srv://4xurlcom:hello@cluster0.lu386ea.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0") # Warning - Give Db uri in deploy server environment variable, don't give in repo.
 DB_NAME = environ.get("DB_NAME", "vjlinkchangerbot")
