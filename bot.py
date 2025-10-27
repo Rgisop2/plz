@@ -1,8 +1,8 @@
 import asyncio
 import logging
 from pyrogram import Client, filters
-from pyrogram.handlers import MessageHandler
-from pyrogram.types import Message
+from pyrogram.handlers import MessageHandler # Keep this for explicit handler import
+from pyrogram.types import Message # Keep this for explicit type hinting
 from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL
 
 logging.basicConfig(level=logging.INFO)
@@ -75,6 +75,7 @@ class Bot(Client):
         # 3. Add a temporary handler if it's not already there
         # We rely on the fact that the main bot instance is running and has a dispatcher
         if not hasattr(self, '_ask_handler_added'):
+            # FIX: Use filters.private directly since it's now imported
             self.add_handler(MessageHandler(self._ask_handler, filters.private))
             setattr(self, '_ask_handler_added', True)
 
