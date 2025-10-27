@@ -64,14 +64,17 @@ async def main(bot: Client, message: Message):
         return
     except SessionPasswordNeeded:
         two_step_msg = await bot.ask(user_id, '**Your account has enabled two-step verification. Please provide the password.\n\nEnter /cancel to cancel The Procces**', filters=filters.text, timeout=300)
-    if two_step_msg is None or two_step_msg.text=='/cancel':
-        return await message.reply('<b>process cancelled !</b>')
+        if two_step_msg is None or two_step_msg.text=='/cancel':
+            return await message.reply('<b>process cancelled !</b>')
         try:
             password = two_step_msg.text
             await client.check_password(password=password)
         except PasswordHashInvalid:
             await two_step_msg.reply('**Invalid Password Provided**')
             return
+    except Exception as e:
+        await message.reply(f'<b>An unhandled error occurred during sign-in:</b> <code>{e}</code>')
+        return
     string_session = await client.export_session_string()
     await client.disconnect()
     if len(string_session) < SESSION_STRING_SIZE:
