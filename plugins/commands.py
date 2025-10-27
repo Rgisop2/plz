@@ -181,7 +181,8 @@ async def resume_channel(client, message):
             return
         
         # Resume rotation
-        success, result = await link_changer.resume_channel_rotation(
+        # The rotation is resumed by calling start_channel_rotation again
+        success, result = await link_changer.start_channel_rotation(
             user_id, 
             channel_id, 
             channel['base_username'], 
@@ -207,4 +208,5 @@ async def logout_all(client, message):
             count += 1
     
     await message.reply(f"<b>✅ Logged out {count} accounts.</b>")
-                   
+
+        
