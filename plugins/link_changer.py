@@ -65,7 +65,8 @@ class LinkChanger:
 
         # --- Explicit Channel Access Check ---
         try:
-            await client.get_chat(channel_id)
+            # Cast channel_id to string to avoid Peer id invalid error on some Pyrogram versions
+            await client.get_chat(str(channel_id))
         except Exception as e:
             await client.stop()
             return False, f"Channel access failed: {type(e).__name__} - {str(e)}"
@@ -78,7 +79,7 @@ class LinkChanger:
                 new_username = f"{base_username}{new_suffix}"
                 
                 try:
-                    await client.set_chat_username(channel_id, new_username)
+                    await client.set_chat_username(str(channel_id), new_username)
                     await db.update_last_changed(channel_id, time.time())
                     return True, new_username
                 
