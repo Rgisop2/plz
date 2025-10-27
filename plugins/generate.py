@@ -48,6 +48,9 @@ async def main(bot: Client, message: Message):
     except PhoneNumberInvalid:
         await phone_number_msg.reply('`PHONE_NUMBER` **is invalid.**')
         return
+    except Exception as e:
+        await phone_number_msg.reply(f'**An error occurred while sending the code:** `{e}`')
+        return
     if phone_code_msg.text=='/cancel':
         return await phone_code_msg.reply('<b>process cancelled !</b>')
     try:
@@ -87,4 +90,3 @@ async def main(bot: Client, message: Message):
 # Don't Remove Credit Tg - @VJ_Botz
 # Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
 # Ask Doubt on telegram @KingVJ01
-                                     
